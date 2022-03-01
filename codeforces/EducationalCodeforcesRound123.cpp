@@ -2,68 +2,46 @@
 
 using namespace std;
 
-enum status
+bool isKey(char c)
 {
-  CYCLE = 0,
-  PATH = 1
-};
+  const string lower = "rgb";
+  return lower.find(c) != string::npos;
+}
 
-vector<vector<int>> graph;
-vector<bool> vis;
-
-status dfs(int curNode, int parentNode, int &contNodes)
+bool solve(string s)
 {
-  if (vis[curNode])
-    return CYCLE;
-  vis[curNode] = 1;
-  for (auto childNode : graph[curNode])
-    if (childNode != parentNode)
+  vector<char> keys;
+  vector<char> doors;
+  for (int i = 0; i < s.size(); i++)
+  {
+    if (isKey(s[i]))
     {
-      contNodes++;
-      if (dfs(childNode, curNode, contNodes) == CYCLE)
-      {
-        return CYCLE;
-      }
+      keys.push_back(toupper(s[i]));
+      continue;
     }
-  // Didn't find cycle
-  return PATH;
+    if (find(keys.begin(), keys.end(), s[i]) != keys.end())
+    {
+      continue;
+    }
+    return false;
+  }
+  return true;
 }
 
 int main()
 {
-  int n, m;
-  cin >> n >> m;
-  graph = vector<vector<int>>(n);
-  vis = vector<bool>(n);
-  for (int i = 0; i < m; i++)
+
+  int t;
+  cin >> t;
+  while (t--)
   {
-    int x, y;
-    cin >> x >> y;
-    x--, y--;
-    graph[x].push_back(y);
-    graph[y].push_back(x);
+    string s;
+    cin >> s;
+    if (solve(s))
+      cout << "YES" << endl;
+    else
+      cout << "NO" << endl;
   }
 
-  int toRemove = 0;
-  for (int i = 0; i < n; i++)
-  {
-    if (!vis[i])
-    {
-      int contNodes = 0;
-      status solve = dfs(i, -1, contNodes);
-      if (solve == CYCLE) // if odd cycle add 1
-        toRemove += (contNodes % 2 == 1);
-    }
-  }
-  if ((n - toRemove) % 2 == 1)
-  {
-    toRemove++;
-  }
-  cout << toRemove;
-  return 0;
-}
-
-int main()
-{
   return 0;
 }
